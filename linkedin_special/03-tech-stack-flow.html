@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tech Stack Flow - Animated Data Pipeline</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: #0f172a;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 40px 20px;
+  }
+  h1 {
+    font-size: 2.4em;
+    background: linear-gradient(90deg, #06b6d4, #a855f7, #f472b6);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 10px;
+    font-weight: 800;
+  }
+  .subtitle {
+    color: #94a3b8;
+    font-size: 1.1em;
+    margin-bottom: 40px;
+  }
+  .stack-container {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    max-width: 900px;
+    width: 100%;
+    position: relative;
+  }
+  .layer {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    padding: 18px 24px;
+    border-radius: 16px;
+    position: relative;
+    margin-bottom: 4px;
+    transition: transform 0.3s, box-shadow 0.3s;
+  }
+  .layer:hover {
+    transform: translateX(8px);
+    box-shadow: 0 0 30px rgba(168,85,247,0.2);
+  }
+  .layer-num {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 800;
+    font-size: 1.1em;
+    color: white;
+    flex-shrink: 0;
+  }
+  .layer-content {
+    flex: 1;
+  }
+  .layer-title {
+    font-size: 1.15em;
+    font-weight: 700;
+    color: white;
+    margin-bottom: 4px;
+  }
+  .layer-desc {
+    color: #94a3b8;
+    font-size: 0.85em;
+  }
+  .layer-tech {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-top: 8px;
+  }
+  .tech-badge {
+    padding: 3px 10px;
+    border-radius: 12px;
+    font-size: 0.75em;
+    font-weight: 600;
+    color: white;
+  }
+  .flow-indicator {
+    text-align: center;
+    padding: 6px;
+    position: relative;
+  }
+  .flow-arrow {
+    display: inline-block;
+    width: 3px;
+    height: 30px;
+    border-radius: 2px;
+    position: relative;
+    overflow: hidden;
+  }
+  .flow-arrow::after {
+    content: '';
+    position: absolute;
+    top: -100%;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    animation: flowDown 1.5s linear infinite;
+  }
+  @keyframes flowDown {
+    0% { top: -100%; }
+    100% { top: 100%; }
+  }
+  .flow-dots {
+    display: flex;
+    justify-content: center;
+    gap: 6px;
+    margin: 4px 0;
+  }
+  .flow-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    animation: dotPulse 1.5s ease-in-out infinite;
+  }
+  .flow-dot:nth-child(2) { animation-delay: 0.3s; }
+  .flow-dot:nth-child(3) { animation-delay: 0.6s; }
+  @keyframes dotPulse {
+    0%, 100% { opacity: 0.3; transform: scale(0.8); }
+    50% { opacity: 1; transform: scale(1.2); }
+  }
+
+  .l1 { background: linear-gradient(135deg, rgba(124,58,237,0.15), rgba(124,58,237,0.05)); border: 1px solid rgba(124,58,237,0.3); }
+  .l1 .layer-num { background: linear-gradient(135deg, #7c3aed, #a855f7); }
+  .l1 .tech-badge { background: rgba(124,58,237,0.3); border: 1px solid rgba(124,58,237,0.5); }
+  .l1-color { background: #a855f7; }
+
+  .l2 { background: linear-gradient(135deg, rgba(6,182,212,0.15), rgba(6,182,212,0.05)); border: 1px solid rgba(6,182,212,0.3); }
+  .l2 .layer-num { background: linear-gradient(135deg, #0891b2, #06b6d4); }
+  .l2 .tech-badge { background: rgba(6,182,212,0.3); border: 1px solid rgba(6,182,212,0.5); }
+  .l2-color { background: #06b6d4; }
+
+  .l3 { background: linear-gradient(135deg, rgba(244,114,182,0.15), rgba(244,114,182,0.05)); border: 1px solid rgba(244,114,182,0.3); }
+  .l3 .layer-num { background: linear-gradient(135deg, #db2777, #f472b6); }
+  .l3 .tech-badge { background: rgba(244,114,182,0.3); border: 1px solid rgba(244,114,182,0.5); }
+  .l3-color { background: #f472b6; }
+
+  .l4 { background: linear-gradient(135deg, rgba(249,115,22,0.15), rgba(249,115,22,0.05)); border: 1px solid rgba(249,115,22,0.3); }
+  .l4 .layer-num { background: linear-gradient(135deg, #ea580c, #f97316); }
+  .l4 .tech-badge { background: rgba(249,115,22,0.3); border: 1px solid rgba(249,115,22,0.5); }
+  .l4-color { background: #f97316; }
+
+  .l5 { background: linear-gradient(135deg, rgba(16,185,129,0.15), rgba(16,185,129,0.05)); border: 1px solid rgba(16,185,129,0.3); }
+  .l5 .layer-num { background: linear-gradient(135deg, #059669, #10b981); }
+  .l5 .tech-badge { background: rgba(16,185,129,0.3); border: 1px solid rgba(16,185,129,0.5); }
+  .l5-color { background: #10b981; }
+
+  .l6 { background: linear-gradient(135deg, rgba(59,130,246,0.15), rgba(59,130,246,0.05)); border: 1px solid rgba(59,130,246,0.3); }
+  .l6 .layer-num { background: linear-gradient(135deg, #2563eb, #3b82f6); }
+  .l6 .tech-badge { background: rgba(59,130,246,0.3); border: 1px solid rgba(59,130,246,0.5); }
+  .l6-color { background: #3b82f6; }
+
+  .prompt-box {
+    max-width: 900px;
+    width: 100%;
+    background: linear-gradient(135deg, rgba(168,85,247,0.08), rgba(6,182,212,0.08));
+    border: 1px solid rgba(168,85,247,0.25);
+    border-radius: 12px;
+    padding: 24px;
+    margin-top: 40px;
+    color: #e2e8f0;
+  }
+  .prompt-box h3 { color: #a855f7; margin-bottom: 10px; }
+  .prompt-box code {
+    display: block;
+    background: rgba(0,0,0,0.5);
+    padding: 16px;
+    border-radius: 8px;
+    color: #06b6d4;
+    font-size: 0.85em;
+    line-height: 1.6;
+    white-space: pre-wrap;
+  }
+</style>
+</head>
+<body>
+<h1>Modern AI Tech Stack</h1>
+<p class="subtitle">Data flows from top to bottom with animated indicators</p>
+
+<div class="stack-container">
+  <div class="layer l1">
+    <div class="layer-num">1</div>
+    <div class="layer-content">
+      <div class="layer-title">Client Layer</div>
+      <div class="layer-desc">User interfaces and interaction points</div>
+      <div class="layer-tech">
+        <span class="tech-badge">React</span>
+        <span class="tech-badge">Next.js</span>
+        <span class="tech-badge">Mobile SDKs</span>
+        <span class="tech-badge">Chat UI</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="flow-indicator">
+    <div class="flow-dots">
+      <div class="flow-dot l1-color"></div>
+      <div class="flow-dot l1-color"></div>
+      <div class="flow-dot l1-color"></div>
+    </div>
+  </div>
+
+  <div class="layer l2">
+    <div class="layer-num">2</div>
+    <div class="layer-content">
+      <div class="layer-title">API Gateway & Auth</div>
+      <div class="layer-desc">Request routing, rate limiting, authentication</div>
+      <div class="layer-tech">
+        <span class="tech-badge">Kong</span>
+        <span class="tech-badge">OAuth2</span>
+        <span class="tech-badge">JWT</span>
+        <span class="tech-badge">Rate Limit</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="flow-indicator">
+    <div class="flow-dots">
+      <div class="flow-dot l2-color"></div>
+      <div class="flow-dot l2-color"></div>
+      <div class="flow-dot l2-color"></div>
+    </div>
+  </div>
+
+  <div class="layer l3">
+    <div class="layer-num">3</div>
+    <div class="layer-content">
+      <div class="layer-title">Orchestration Layer</div>
+      <div class="layer-desc">Prompt management, chain routing, agent coordination</div>
+      <div class="layer-tech">
+        <span class="tech-badge">LangChain</span>
+        <span class="tech-badge">LlamaIndex</span>
+        <span class="tech-badge">Semantic Kernel</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="flow-indicator">
+    <div class="flow-dots">
+      <div class="flow-dot l3-color"></div>
+      <div class="flow-dot l3-color"></div>
+      <div class="flow-dot l3-color"></div>
+    </div>
+  </div>
+
+  <div class="layer l4">
+    <div class="layer-num">4</div>
+    <div class="layer-content">
+      <div class="layer-title">Model Layer</div>
+      <div class="layer-desc">LLM inference, fine-tuned models, embeddings</div>
+      <div class="layer-tech">
+        <span class="tech-badge">Gemini Nano</span>
+        <span class="tech-badge">GPT-4</span>
+        <span class="tech-badge">Claude</span>
+        <span class="tech-badge">Llama</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="flow-indicator">
+    <div class="flow-dots">
+      <div class="flow-dot l4-color"></div>
+      <div class="flow-dot l4-color"></div>
+      <div class="flow-dot l4-color"></div>
+    </div>
+  </div>
+
+  <div class="layer l5">
+    <div class="layer-num">5</div>
+    <div class="layer-content">
+      <div class="layer-title">Data & Vector Store</div>
+      <div class="layer-desc">Knowledge base, embeddings storage, caching</div>
+      <div class="layer-tech">
+        <span class="tech-badge">Pinecone</span>
+        <span class="tech-badge">Weaviate</span>
+        <span class="tech-badge">Redis</span>
+        <span class="tech-badge">PostgreSQL</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="flow-indicator">
+    <div class="flow-dots">
+      <div class="flow-dot l5-color"></div>
+      <div class="flow-dot l5-color"></div>
+      <div class="flow-dot l5-color"></div>
+    </div>
+  </div>
+
+  <div class="layer l6">
+    <div class="layer-num">6</div>
+    <div class="layer-content">
+      <div class="layer-title">Infrastructure</div>
+      <div class="layer-desc">Cloud compute, containers, monitoring, CI/CD</div>
+      <div class="layer-tech">
+        <span class="tech-badge">AWS/GCP</span>
+        <span class="tech-badge">Docker</span>
+        <span class="tech-badge">K8s</span>
+        <span class="tech-badge">Terraform</span>
+        <span class="tech-badge">Prometheus</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="prompt-box">
+  <h3>Prompt to Generate This Visual</h3>
+  <code>Generate an animated HTML/CSS tech stack visualization showing a 6-layer AI architecture:
+- Layer 1: Client (React, Next.js) - purple theme
+- Layer 2: API Gateway (Kong, OAuth) - teal theme  
+- Layer 3: Orchestration (LangChain, LlamaIndex) - pink theme
+- Layer 4: Model Layer (Gemini, GPT-4) - orange theme
+- Layer 5: Data Store (Pinecone, Redis) - green theme
+- Layer 6: Infrastructure (AWS, Docker, K8s) - blue theme
+
+Each layer should be a card with gradient background, numbered circle, title, description, and tech badges.
+Between layers add animated flowing dots (3 dots pulsing sequentially) to show data flow direction.
+Hover effect: layers slide right with glow shadow.
+Dark navy background (#0f172a). Responsive layout.</code>
+</div>
+</body>
+</html>

@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ML Pipeline - Animated Flowing Gradient Lines</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: #0a0a1a;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 40px 20px;
+    color: white;
+  }
+  h1 {
+    font-size: 2.2em;
+    background: linear-gradient(90deg, #22d3ee, #a855f7);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 8px;
+    font-weight: 800;
+  }
+  .subtitle { color: #64748b; margin-bottom: 40px; font-size: 1em; }
+  .pipeline {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    max-width: 1100px;
+    width: 100%;
+    overflow-x: auto;
+    padding: 40px 0;
+  }
+  .stage {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-width: 140px;
+    position: relative;
+  }
+  .stage-icon {
+    width: 70px;
+    height: 70px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.8em;
+    position: relative;
+    z-index: 2;
+    animation: iconPulse 3s ease-in-out infinite;
+  }
+  .stage-icon::after {
+    content: '';
+    position: absolute;
+    inset: -4px;
+    border-radius: 50%;
+    border: 2px solid transparent;
+    animation: ringRotate 4s linear infinite;
+  }
+  @keyframes iconPulse {
+    0%, 100% { transform: scale(1); box-shadow: 0 0 15px rgba(168,85,247,0.3); }
+    50% { transform: scale(1.08); box-shadow: 0 0 30px rgba(168,85,247,0.6); }
+  }
+  @keyframes ringRotate {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+  }
+  .stage-label {
+    margin-top: 12px;
+    font-weight: 700;
+    font-size: 0.85em;
+    text-align: center;
+  }
+  .stage-desc {
+    color: #64748b;
+    font-size: 0.7em;
+    text-align: center;
+    margin-top: 4px;
+    max-width: 120px;
+  }
+  .connector {
+    flex: 1;
+    min-width: 60px;
+    height: 4px;
+    position: relative;
+    margin: 0 -5px;
+    margin-bottom: 45px;
+  }
+  .connector-bg {
+    position: absolute;
+    inset: 0;
+    border-radius: 2px;
+    opacity: 0.15;
+  }
+  .connector-flow {
+    position: absolute;
+    inset: 0;
+    border-radius: 2px;
+    overflow: hidden;
+  }
+  .connector-flow::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 50%;
+    height: 100%;
+    border-radius: 2px;
+    animation: pipeFlow 2s linear infinite;
+  }
+  @keyframes pipeFlow {
+    0% { left: -50%; }
+    100% { left: 100%; }
+  }
+  .connector-particles {
+    position: absolute;
+    top: 50%;
+    left: 0;
+    width: 100%;
+    height: 0;
+  }
+  .particle {
+    position: absolute;
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    top: -2.5px;
+    animation: particleMove 2.5s linear infinite;
+  }
+  .particle:nth-child(2) { animation-delay: 0.8s; }
+  .particle:nth-child(3) { animation-delay: 1.6s; }
+  @keyframes particleMove {
+    0% { left: 0; opacity: 0; }
+    10% { opacity: 1; }
+    90% { opacity: 1; }
+    100% { left: 100%; opacity: 0; }
+  }
+
+  .s1 .stage-icon { background: linear-gradient(135deg, #7c3aed, #a855f7); }
+  .s2 .stage-icon { background: linear-gradient(135deg, #2563eb, #3b82f6); }
+  .s3 .stage-icon { background: linear-gradient(135deg, #0891b2, #06b6d4); }
+  .s4 .stage-icon { background: linear-gradient(135deg, #059669, #10b981); }
+  .s5 .stage-icon { background: linear-gradient(135deg, #ea580c, #f97316); }
+  .s6 .stage-icon { background: linear-gradient(135deg, #db2777, #f472b6); }
+
+  .c1 .connector-bg { background: linear-gradient(90deg, #a855f7, #3b82f6); }
+  .c1 .connector-flow::after { background: linear-gradient(90deg, transparent, #a855f7, #3b82f6, transparent); }
+  .c1 .particle { background: #a855f7; box-shadow: 0 0 6px #a855f7; }
+
+  .c2 .connector-bg { background: linear-gradient(90deg, #3b82f6, #06b6d4); }
+  .c2 .connector-flow::after { background: linear-gradient(90deg, transparent, #3b82f6, #06b6d4, transparent); }
+  .c2 .particle { background: #3b82f6; box-shadow: 0 0 6px #3b82f6; }
+
+  .c3 .connector-bg { background: linear-gradient(90deg, #06b6d4, #10b981); }
+  .c3 .connector-flow::after { background: linear-gradient(90deg, transparent, #06b6d4, #10b981, transparent); }
+  .c3 .particle { background: #06b6d4; box-shadow: 0 0 6px #06b6d4; }
+
+  .c4 .connector-bg { background: linear-gradient(90deg, #10b981, #f97316); }
+  .c4 .connector-flow::after { background: linear-gradient(90deg, transparent, #10b981, #f97316, transparent); }
+  .c4 .particle { background: #10b981; box-shadow: 0 0 6px #10b981; }
+
+  .c5 .connector-bg { background: linear-gradient(90deg, #f97316, #f472b6); }
+  .c5 .connector-flow::after { background: linear-gradient(90deg, transparent, #f97316, #f472b6, transparent); }
+  .c5 .particle { background: #f97316; box-shadow: 0 0 6px #f97316; }
+
+  .metrics {
+    max-width: 1100px;
+    width: 100%;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 16px;
+    margin-top: 40px;
+  }
+  .metric-card {
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 12px;
+    padding: 20px;
+    text-align: center;
+    transition: transform 0.3s, border-color 0.3s;
+  }
+  .metric-card:hover {
+    transform: translateY(-4px);
+    border-color: rgba(168,85,247,0.4);
+  }
+  .metric-value {
+    font-size: 2em;
+    font-weight: 800;
+    background: linear-gradient(135deg, #a855f7, #06b6d4);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  .metric-label {
+    color: #94a3b8;
+    font-size: 0.8em;
+    margin-top: 4px;
+  }
+  .prompt-box {
+    max-width: 1100px;
+    width: 100%;
+    background: rgba(168,85,247,0.06);
+    border: 1px solid rgba(168,85,247,0.2);
+    border-radius: 12px;
+    padding: 24px;
+    margin-top: 40px;
+  }
+  .prompt-box h3 { color: #a855f7; margin-bottom: 10px; }
+  .prompt-box code {
+    display: block;
+    background: rgba(0,0,0,0.5);
+    padding: 16px;
+    border-radius: 8px;
+    color: #06b6d4;
+    font-size: 0.85em;
+    line-height: 1.6;
+    white-space: pre-wrap;
+  }
+</style>
+</head>
+<body>
+<h1>ML Pipeline Flow</h1>
+<p class="subtitle">Watch data flow through each stage of the machine learning pipeline</p>
+
+<div class="pipeline">
+  <div class="stage s1">
+    <div class="stage-icon">📥</div>
+    <div class="stage-label">Data Ingestion</div>
+    <div class="stage-desc">Raw data collection & streaming</div>
+  </div>
+  <div class="connector c1">
+    <div class="connector-bg"></div>
+    <div class="connector-flow"></div>
+    <div class="connector-particles">
+      <div class="particle"></div>
+      <div class="particle"></div>
+      <div class="particle"></div>
+    </div>
+  </div>
+  <div class="stage s2">
+    <div class="stage-icon">🔄</div>
+    <div class="stage-label">Preprocessing</div>
+    <div class="stage-desc">Clean, transform, normalize</div>
+  </div>
+  <div class="connector c2">
+    <div class="connector-bg"></div>
+    <div class="connector-flow"></div>
+    <div class="connector-particles">
+      <div class="particle"></div>
+      <div class="particle"></div>
+      <div class="particle"></div>
+    </div>
+  </div>
+  <div class="stage s3">
+    <div class="stage-icon">🧠</div>
+    <div class="stage-label">Training</div>
+    <div class="stage-desc">Model training & fine-tuning</div>
+  </div>
+  <div class="connector c3">
+    <div class="connector-bg"></div>
+    <div class="connector-flow"></div>
+    <div class="connector-particles">
+      <div class="particle"></div>
+      <div class="particle"></div>
+      <div class="particle"></div>
+    </div>
+  </div>
+  <div class="stage s4">
+    <div class="stage-icon">✅</div>
+    <div class="stage-label">Evaluation</div>
+    <div class="stage-desc">Test accuracy & metrics</div>
+  </div>
+  <div class="connector c4">
+    <div class="connector-bg"></div>
+    <div class="connector-flow"></div>
+    <div class="connector-particles">
+      <div class="particle"></div>
+      <div class="particle"></div>
+      <div class="particle"></div>
+    </div>
+  </div>
+  <div class="stage s5">
+    <div class="stage-icon">🚀</div>
+    <div class="stage-label">Deployment</div>
+    <div class="stage-desc">Serve model via API</div>
+  </div>
+  <div class="connector c5">
+    <div class="connector-bg"></div>
+    <div class="connector-flow"></div>
+    <div class="connector-particles">
+      <div class="particle"></div>
+      <div class="particle"></div>
+      <div class="particle"></div>
+    </div>
+  </div>
+  <div class="stage s6">
+    <div class="stage-icon">📊</div>
+    <div class="stage-label">Monitoring</div>
+    <div class="stage-desc">Track drift & performance</div>
+  </div>
+</div>
+
+<div class="metrics">
+  <div class="metric-card">
+    <div class="metric-value">99.2%</div>
+    <div class="metric-label">Model Accuracy</div>
+  </div>
+  <div class="metric-card">
+    <div class="metric-value">45ms</div>
+    <div class="metric-label">Avg Latency</div>
+  </div>
+  <div class="metric-card">
+    <div class="metric-value">10K</div>
+    <div class="metric-label">Requests/sec</div>
+  </div>
+  <div class="metric-card">
+    <div class="metric-value">0.3%</div>
+    <div class="metric-label">Error Rate</div>
+  </div>
+</div>
+
+<div class="prompt-box">
+  <h3>Prompt to Generate This Visual</h3>
+  <code>Create an animated ML pipeline visualization with 6 stages in a horizontal flow:
+1. Data Ingestion (purple) 2. Preprocessing (blue) 3. Training (teal)
+4. Evaluation (green) 5. Deployment (orange) 6. Monitoring (pink)
+
+Each stage is a circle with emoji icon, label, and description.
+Between stages, add animated connectors with:
+- Gradient background line (15% opacity)
+- Flowing light effect (50% width bar sliding left-to-right)
+- 3 glowing particles traveling along the path with staggered delays
+
+Below the pipeline, add 4 metric cards (Accuracy, Latency, Requests/sec, Error Rate)
+with hover lift effect. Dark background, gradient text on metrics.
+CSS-only animations, no JavaScript needed.</code>
+</div>
+</body>
+</html>
