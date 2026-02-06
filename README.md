@@ -59,12 +59,12 @@ The `linkedin_special/` folder contains **6 runnable HTML files** with animated 
 
 | File | Animation |
 |------|-----------|
-| [AI Learning Roadmap](linkedin_special/01-ai-roadmap.html) | Flowing path with pulsing milestone nodes |
-| [Tech Stack Flow](linkedin_special/02-tech-stack-flow.html) | Request journey through system layers |
-| [Career Growth Path](linkedin_special/03-career-growth.html) | Progressive skill development roadmap |
-| [DevOps Pipeline](linkedin_special/04-devops-pipeline.html) | CI/CD flow with animated data particles |
-| [API Architecture](linkedin_special/05-api-architecture.html) | Microservices communication flow |
-| [Data Pipeline](linkedin_special/06-data-pipeline.html) | ETL process with streaming animations |
+| [AI Systems Roadmap](linkedin_special/01-flowing-roadmap.html) | Flowing path with pulsing milestone nodes |
+| [Prompt Engineering Mind Map](linkedin_special/02-animated-mindmap.html) | Animated mind map with branching connections |
+| [Tech Stack Flow](linkedin_special/03-tech-stack-flow.html) | Animated data pipeline through system layers |
+| [ML Pipeline](linkedin_special/04-process-pipeline.html) | Flowing gradient lines through ML stages |
+| [Neural Network](linkedin_special/05-network-visualization.html) | Animated signal propagation visualization |
+| [Career Timeline](linkedin_special/06-timeline-flow.html) | Animated milestone timeline flow |
 
 > Open any `.html` file in your browser to see the animations!
 
@@ -160,12 +160,12 @@ nanobanavisaulprompts/
 └── linkedin_special/                  ← Animated HTML diagrams
     ├── README.md
     ├── prompts-for-dynamic-visuals.md
-    ├── 01-ai-roadmap.html
-    ├── 02-tech-stack-flow.html
-    ├── 03-career-growth.html
-    ├── 04-devops-pipeline.html
-    ├── 05-api-architecture.html
-    └── 06-data-pipeline.html
+    ├── 01-flowing-roadmap.html
+    ├── 02-animated-mindmap.html
+    ├── 03-tech-stack-flow.html
+    ├── 04-process-pipeline.html
+    ├── 05-network-visualization.html
+    └── 06-timeline-flow.html
 ```
 
 ---
