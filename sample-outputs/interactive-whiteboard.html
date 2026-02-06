@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Google Cloud Services: Interactive Whiteboard</title>
+<style>
+  :root {
+    --bg-color: #f4f7f6;
+    --text-color: #333;
+    --highlight-blue: #e3f2fd;
+    --highlight-green: #e8f5e9;
+    --highlight-orange: #fff3e0;
+    --highlight-purple: #f3e5f5;
+    --border-color: #b0bec5;
+    --accent-blue: #1976d2;
+    --accent-green: #388e3c;
+    --accent-orange: #f57c00;
+    --accent-purple: #7b1fa2;
+    --handwriting-font: 'Comic Sans MS', 'cursive', sans-serif; /* Fallback */
+  }
+
+  body {
+    font-family: sans-serif;
+    margin: 0;
+    display: flex;
+    height: 100vh;
+    background-color: var(--bg-color);
+    color: var(--text-color);
+  }
+
+  #sidebar {
+    width: 280px;
+    background-color: #fff;
+    border-right: 2px solid var(--border-color);
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 2px 0 5px rgba(0,0,0,0.05);
+  }
+
+  #sidebar h2 {
+    margin-top: 0;
+    font-family: var(--handwriting-font);
+    color: var(--accent-blue);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+
+  #sidebar ul {
+    list-style-type: none;
+    padding: 0;
+    margin-bottom: 30px;
+  }
+
+  #sidebar li {
+    padding: 12px 15px;
+    cursor: pointer;
+    border-radius: 8px;
+    margin-bottom: 8px;
+    transition: background-color 0.2s, color 0.2s;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+  }
+
+  #sidebar li:before {
+    content: '•';
+    color: var(--accent-blue);
+    font-size: 1.5em;
+    margin-right: 10px;
+    line-height: 1;
+  }
+
+  #sidebar li:hover {
+    background-color: var(--highlight-blue);
+    color: var(--accent-blue);
+  }
+
+  #sidebar li.active {
+    background-color: var(--accent-blue);
+    color: white;
+  }
+  #sidebar li.active:before {
+    color: white;
+  }
+
+  #summary-box {
+    background-color: #fff;
+    border: 2px dashed var(--border-color);
+    padding: 15px;
+    border-radius: 8px;
+    flex-grow: 1;
+  }
+
+  #summary-box h3 {
+    margin-top: 0;
+    font-family: var(--handwriting-font);
+    color: var(--accent-orange);
+  }
+
+  #summary-content {
+    font-size: 0.95em;
+    line-height: 1.5;
+    font-family: var(--handwriting-font);
+    color: #555;
+  }
+
+  #whiteboard-container {
+    flex-grow: 1;
+    padding: 30px;
+    overflow: auto;
+    background-image: radial-gradient(#e0e0e0 1px, transparent 1px);
+    background-size: 20px 20px;
+    background-color: #fafafa;
+  }
+
+  #whiteboard {
+    background-color: #fff;
+    border: 3px solid var(--border-color);
+    border-radius: 15px;
+    padding: 30px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    position: relative;
+    font-family: var(--handwriting-font);
+    min-width: 900px; /* Ensure it doesn't get too cramped */
+  }
+
+  h1.wb-title {
+    text-align: center;
+    color: var(--accent-blue);
+    text-transform: uppercase;
+    margin-bottom: 40px;
+    text-decoration: underline wavy var(--accent-orange);
+  }
+
+  .wb-section {
+    border: 2px solid var(--border-color);
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 30px;
+    position: relative;
+    transition: box-shadow 0.3s, transform 0.3s;
+    background-color: #fff;
+  }
+
+  .wb-section h2 {
+    position: absolute;
+    top: -15px;
+    left: 20px;
+    background-color: #fff;
+    padding: 0 10px;
+    margin: 0;
+    color: var(--accent-blue);
+  }
+  
+  .wb-section.highlighted {
+    box-shadow: 0 0 15px rgba(25, 118, 210, 0.5);
+    transform: scale(1.01);
+    z-index: 10;
+  }
+
+  .wb-columns {
+    display: flex;
+    gap: 30px;
+  }
+
+  .wb-column {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .wb-box {
+    border: 2px dashed var(--border-color);
+    border-radius: 10px;
+    padding: 15px;
+    background-color: #fff;
+    text-align: center;
+    position: relative;
+  }
+
+  .wb-box h3 {
+    margin: 0 0 10px 0;
+    color: var(--accent-blue);
+  }
+
+  .wb-box p {
+    margin: 0;
+    font-size: 0.9em;
+    color: #666;
+  }
+  
+  .wb-box.compute h3 { color: var(--accent-blue); }
+  .wb-box.storage h3 { color: var(--accent-green); }
+  .wb-box.networking h3 { color: var(--accent-orange); }
+
+  .arrow-down, .arrow-right, .arrow-up {
+    font-size: 2em;
+    color: var(--border-color);
+    text-align: center;
+    display: block;
+    margin: 5px 0;
+  }
+  .arrow-right { display: inline-block; margin: 0 5px; transform: rotate(-90deg); }
+
+  .wb-caption {
+    font-size: 0.85em;
+    color: #777;
+    margin-top: 5px;
+    font-style: italic;
+  }
+
+  .architecture-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+  }
+
+  .architecture-grid .wb-box h3 {
+    color: var(--accent-purple);
+  }
+  
+  /* Define color classes for highlights */
+  .definition { background-color: var(--highlight-blue); padding: 2px 5px; border-radius: 4px; }
+  .example { background-color: var(--highlight-green); padding: 2px 5px; border-radius: 4px; }
+  .formula { background-color: var(--highlight-orange); padding: 2px 5px; border-radius: 4px; }
+
+</style>
+</head>
+<body>
+
+<div id="sidebar">
+  <h2>Lecture Sections</h2>
+  <ul id="section-list">
+    <li data-section="compute">Compute Services</li>
+    <li data-section="storage">Storage Services</li>
+    <li data-section="networking">Networking Services</li>
+    <li data-section="architecture">Architecture & Selection</li>
+    <li data-section="cost">Cost Optimization</li>
+    <li data-section="best-practices">Best Practices</li>
+    <li data-section="hybrid">Hybrid Scenarios</li>
+  </ul>
+  <div id="summary-box">
+    <h3>Summary</h3>
+    <div id="summary-content">
+      Click a section on the left to highlight it on the whiteboard and see a summary here.
+    </div>
+  </div>
+</div>
+
+<div id="whiteboard-container">
+  <div id="whiteboard">
+    <h1 class="wb-title">Google Cloud Services: Core Concepts</h1>
+
+    <div class="wb-columns">
+      <div class="wb-column" id="wb-compute">
+        <div class="wb-section">
+          <h2>COMPUTE (Processing & Logic)</h2>
+          <div class="wb-box compute">
+            <h3>GCE (Compute Engine)</h3>
+            <p><span class="definition">IaaS, VMs</span>. Full OS control. <span class="example">Custom apps, legacy migration</span>.</p>
+          </div>
+          <span class="arrow-down">↓</span>
+          <div class="wb-box compute">
+            <h3>GKE (Kubernetes Engine)</h3>
+            <p><span class="definition">Managed K8s</span>. Container orchestration. <span class="example">Microservices, auto-scaling</span>.</p>
+          </div>
+          <span class="arrow-down">↓</span>
+          <div class="wb-box compute">
+            <h3>Cloud Run & App Engine</h3>
+            <p><span class="definition">Serverless / PaaS</span>. Abstracted infra. <span class="example">Stateless containers, web apps</span>.</p>
+            <p class="wb-caption">Scale to zero, pay-per-use.</p>
+          </div>
+          <span class="arrow-down">↓</span>
+          <div class="wb-box compute">
+            <h3>Cloud Functions</h3>
+            <p><span class="definition">Event-driven FaaS</span>. Single-purpose code. <span class="example">Responders, glue code</span>.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="wb-column" id="wb-storage">
+        <div class="wb-section">
+          <h2>STORAGE (Data Persistence)</h2>
+          <div class="wb-box storage">
+            <h3>Cloud Storage (Object)</h3>
+            <p><span class="definition">Global buckets</span>. High durability. <span class="example">Media, archives, backups</span>.</p>
+            <span class="arrow-right">→</span> <span class="wb-caption">Integrates with Cloud CDN</span>
+          </div>
+          <span class="arrow-down">↓</span>
+          <div class="wb-box storage">
+            <h3>Persistent Disk (Block)</h3>
+            <p><span class="definition">VM-attached drives</span>. High performance. <span class="example">Databases, stateful apps</span>.</p>
+          </div>
+          <span class="arrow-down">↓</span>
+          <div class="wb-box storage">
+            <h3>Cloud Filestore (File)</h3>
+            <p><span class="definition">Managed NFS</span>. Shared access. <span class="example">CMS, media processing</span>.</p>
+          </div>
+          <span class="arrow-down">↓</span>
+          <div class="wb-box storage">
+            <h3>Local SSD (Ephemeral)</h3>
+            <p><span class="definition">Attached to host</span>. Extreme performance. <span class="example">Caching, temp data</span>.</p>
+            <p class="wb-caption">Data lost on instance stop.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="wb-column" id="wb-networking">
+        <div class="wb-section">
+          <h2>NETWORKING (Connectivity & Distribution)</h2>
+          <div class="wb-box networking">
+            <h3>Cloud Load Balancing</h3>
+            <p><span class="definition">Global traffic distribution</span>. High availability. <span class="example">HTTP(S), TCP/UDP balancing</span>.</p>
+            <span class="arrow-up">↑</span>
+          </div>
+          <div class="wb-box networking">
+            <h3>Cloud CDN</h3>
+            <p><span class="definition">Edge caching</span>. Faster delivery. <span class="example">Web content, video streaming</span>.</p>
+            <span class="arrow-up">↑</span>
+          </div>
+          <div class="wb-box networking">
+            <h3>VPC (Virtual Private Cloud)</h3>
+            <p><span class="definition">Foundational network</span>. Isolation, firewalls. <span class="example">Subnets, routes, security</span>.</p>
+          </div>
+          <div style="display: flex; justify-content: space-between; margin-top: 20px;">
+            <div class="wb-box networking" style="flex: 1; margin-right: 10px;">
+              <h3>Cloud Interconnect</h3>
+              <p><span class="definition">Dedicated link</span>. Low latency. <span class="example">Hybrid workloads</span>.</p>
+            </div>
+            <div class="wb-box networking" style="flex: 1; margin-left: 10px;">
+              <h3>Cloud VPN</h3>
+              <p><span class="definition">Encrypted tunnel</span>. Secure access. <span class="example">Site-to-site connection</span>.</p>
+            </div>
+          </div>
+          <p class="wb-caption" style="text-align: center;">↓ Connect to On-Premises ↓</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="wb-section" id="wb-architecture">
+      <h2>ARCHITECTURE & OPTIMIZATION</h2>
+      <div class="architecture-grid">
+        <div class="wb-box">
+          <h3>Hybrid Scenarios</h3>
+          <p>Connect On-Prem to GCP via <span class="definition">Interconnect or VPN</span>. Use shared storage & containers [168-172].</p>
+        </div>
+        <div class="wb-box">
+          <h3>Cost Optimization</h3>
+          <p><span class="formula">Committed Use Discounts</span>, <span class="formula">Preemptible VMs</span>, storage lifecycle policies [136-146].</p>
+        </div>
+        <div class="wb-box">
+          <h3>Best Practices</h3>
+          <p>Use <span class="definition">managed services</span>, implement <span class="example">health checks</span>, enable <span class="example">versioning</span>, use VPC Service Controls [152-167].</p>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+  const sectionList = document.getElementById('section-list');
+  const summaryContent = document.getElementById('summary-content');
+  const whiteboard Sections = {
+    'compute': document.getElementById('wb-compute').querySelector('.wb-section'),
+    'storage': document.getElementById('wb-storage').querySelector('.wb-section'),
+    'networking': document.getElementById('wb-networking').querySelector('.wb-section'),
+    'architecture': document.getElementById('wb-architecture'),
+    'cost': document.getElementById('wb-architecture'), // Maps to the same section for highlighting
+    'best-practices': document.getElementById('wb-architecture'), // Maps to the same section for highlighting
+    'hybrid': document.getElementById('wb-architecture') // Maps to the same section for highlighting
+  };
+
+  const summaries = {
+    'compute': 'Provides virtual machines (GCE), container orchestration (GKE), and serverless options (Cloud Run, App Engine, Cloud Functions). [cite_start]Offers varying levels of control, scaling, and billing models [cite: 2-39, 133].',
+    [cite_start]'storage': 'Includes object storage (Cloud Storage), block storage (Persistent Disk), shared file storage (Cloud Filestore), and ephemeral high-performance storage (Local SSD) for different durability and performance needs [cite: 40-70, 133].',
+    [cite_start]'networking': 'Core services include VPC for isolation, Cloud Load Balancing for traffic distribution, Cloud CDN for delivery, and Cloud Interconnect/VPN for hybrid connectivity [cite: 71-109, 134-135].',
+    'architecture': 'Provides frameworks for integrating compute, storage, and networking. [cite_start]Selection matrices help choose the right service based on factors like control, scaling, access, and performance [cite: 110-135].',
+    [cite_start]'cost': 'Strategies include using committed use discounts, preemptible VMs, lifecycle policies for storage, and caching with Cloud CDN to reduce costs [cite: 136-151].',
+    [cite_start]'best-practices': 'Recommends using managed services, implementing health checks, enabling versioning, using VPC Service Controls, and multi-region redundancy [cite: 152-167].',
+    [cite_start]'hybrid': 'Connects on-premises infrastructure to GCP using Cloud Interconnect for high-bandwidth or Cloud VPN for encrypted tunnels, often with shared storage and containerized workloads [cite: 168-178].'
+  };
+
+  sectionList.addEventListener('click', (e) => {
+    const li = e.target.closest('li');
+    if (!li) return;
+
+    // Remove active class from all items
+    Array.from(sectionList.children).forEach(item => item.classList.remove('active'));
+    // Add active class to clicked item
+    li.classList.add('active');
+
+    const sectionKey = li.dataset.section;
+    
+    // Update summary content
+    summaryContent.textContent = summaries[sectionKey];
+
+    // Remove highlighting from all whiteboard sections
+    Object.values(whiteboardSections).forEach(section => section.classList.remove('highlighted'));
+    
+    // Highlight the relevant whiteboard section
+    const sectionToHighlight = whiteboardSections[sectionKey];
+    if (sectionToHighlight) {
+      sectionToHighlight.classList.add('highlighted');
+      // Optional: scroll to the section
+      // sectionToHighlight.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+  });
+</script>
+
+</body>
+</html>
