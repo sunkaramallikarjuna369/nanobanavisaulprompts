@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Neural Network - Animated Signal Propagation</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: #0a0a1a;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 40px 20px;
+  }
+  h1 {
+    font-size: 2.2em;
+    background: linear-gradient(90deg, #a855f7, #06b6d4, #10b981);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 8px;
+  }
+  .subtitle { color: #64748b; margin-bottom: 30px; }
+  svg { max-width: 900px; width: 100%; height: auto; }
+
+  .neuron {
+    transition: r 0.3s;
+  }
+  .neuron:hover { r: 18; }
+
+  .synapse {
+    fill: none;
+    stroke-width: 1.5;
+    stroke-linecap: round;
+    opacity: 0.2;
+  }
+  .signal {
+    fill: none;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-dasharray: 4, 8;
+    animation: signalFlow 1.5s linear infinite;
+  }
+  .signal-slow { animation-duration: 2.5s; }
+  .signal-fast { animation-duration: 1s; }
+
+  @keyframes signalFlow {
+    to { stroke-dashoffset: -24; }
+  }
+
+  .layer-label {
+    fill: #475569;
+    font-size: 12px;
+    font-weight: 600;
+    text-anchor: middle;
+  }
+  .neuron-glow {
+    animation: neuronPulse 2s ease-in-out infinite;
+  }
+  .neuron-glow:nth-child(odd) { animation-delay: 0.5s; }
+  .neuron-glow:nth-child(3n) { animation-delay: 1s; }
+  @keyframes neuronPulse {
+    0%, 100% { opacity: 0.4; }
+    50% { opacity: 0.8; }
+  }
+  .info-panel {
+    max-width: 900px;
+    width: 100%;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 12px;
+    margin-top: 30px;
+  }
+  .info-card {
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 10px;
+    padding: 16px;
+    text-align: center;
+    color: white;
+  }
+  .info-card .val {
+    font-size: 1.6em;
+    font-weight: 700;
+    background: linear-gradient(135deg, #a855f7, #06b6d4);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  .info-card .lbl { color: #64748b; font-size: 0.8em; margin-top: 4px; }
+
+  .prompt-box {
+    max-width: 900px; width: 100%;
+    background: rgba(168,85,247,0.06);
+    border: 1px solid rgba(168,85,247,0.2);
+    border-radius: 12px; padding: 24px; margin-top: 30px; color: #e2e8f0;
+  }
+  .prompt-box h3 { color: #a855f7; margin-bottom: 10px; }
+  .prompt-box code {
+    display: block; background: rgba(0,0,0,0.5); padding: 16px;
+    border-radius: 8px; color: #06b6d4; font-size: 0.85em; line-height: 1.6; white-space: pre-wrap;
+  }
+</style>
+</head>
+<body>
+<h1>Neural Network Visualization</h1>
+<p class="subtitle">Watch signals propagate through the network layers</p>
+
+<svg viewBox="0 0 800 500" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="gP"><stop offset="0%" stop-color="#7c3aed"/><stop offset="100%" stop-color="#a855f7"/></linearGradient>
+    <linearGradient id="gB"><stop offset="0%" stop-color="#2563eb"/><stop offset="100%" stop-color="#3b82f6"/></linearGradient>
+    <linearGradient id="gT"><stop offset="0%" stop-color="#0891b2"/><stop offset="100%" stop-color="#06b6d4"/></linearGradient>
+    <linearGradient id="gG"><stop offset="0%" stop-color="#059669"/><stop offset="100%" stop-color="#10b981"/></linearGradient>
+    <linearGradient id="gO"><stop offset="0%" stop-color="#ea580c"/><stop offset="100%" stop-color="#f97316"/></linearGradient>
+    <radialGradient id="rP"><stop offset="0%" stop-color="#a855f7" stop-opacity="0.4"/><stop offset="100%" stop-color="#a855f7" stop-opacity="0"/></radialGradient>
+    <radialGradient id="rB"><stop offset="0%" stop-color="#3b82f6" stop-opacity="0.4"/><stop offset="100%" stop-color="#3b82f6" stop-opacity="0"/></radialGradient>
+    <radialGradient id="rT"><stop offset="0%" stop-color="#06b6d4" stop-opacity="0.4"/><stop offset="100%" stop-color="#06b6d4" stop-opacity="0"/></radialGradient>
+    <radialGradient id="rG"><stop offset="0%" stop-color="#10b981" stop-opacity="0.4"/><stop offset="100%" stop-color="#10b981" stop-opacity="0"/></radialGradient>
+    <radialGradient id="rO"><stop offset="0%" stop-color="#f97316" stop-opacity="0.4"/><stop offset="100%" stop-color="#f97316" stop-opacity="0"/></radialGradient>
+  </defs>
+
+  <!-- Layer labels -->
+  <text class="layer-label" x="100" y="30">Input</text>
+  <text class="layer-label" x="250" y="30">Hidden 1</text>
+  <text class="layer-label" x="400" y="30">Hidden 2</text>
+  <text class="layer-label" x="550" y="30">Hidden 3</text>
+  <text class="layer-label" x="700" y="30">Output</text>
+
+  <!-- Synapses: Input → Hidden1 -->
+  <line class="synapse" x1="100" y1="100" x2="250" y2="80" stroke="#a855f7"/>
+  <line class="signal" x1="100" y1="100" x2="250" y2="80" stroke="#a855f7"/>
+  <line class="synapse" x1="100" y1="100" x2="250" y2="160" stroke="#a855f7"/>
+  <line class="signal signal-slow" x1="100" y1="100" x2="250" y2="160" stroke="#a855f7"/>
+  <line class="synapse" x1="100" y1="100" x2="250" y2="240" stroke="#a855f7"/>
+  <line class="signal" x1="100" y1="100" x2="250" y2="240" stroke="#a855f7"/>
+  <line class="synapse" x1="100" y1="100" x2="250" y2="320" stroke="#a855f7"/>
+  <line class="signal signal-fast" x1="100" y1="100" x2="250" y2="320" stroke="#a855f7"/>
+  <line class="synapse" x1="100" y1="200" x2="250" y2="80" stroke="#a855f7"/>
+  <line class="signal signal-slow" x1="100" y1="200" x2="250" y2="80" stroke="#a855f7"/>
+  <line class="synapse" x1="100" y1="200" x2="250" y2="160" stroke="#a855f7"/>
+  <line class="signal" x1="100" y1="200" x2="250" y2="160" stroke="#a855f7"/>
+  <line class="synapse" x1="100" y1="200" x2="250" y2="240" stroke="#a855f7"/>
+  <line class="signal signal-fast" x1="100" y1="200" x2="250" y2="240" stroke="#a855f7"/>
+  <line class="synapse" x1="100" y1="200" x2="250" y2="320" stroke="#a855f7"/>
+  <line class="signal" x1="100" y1="200" x2="250" y2="320" stroke="#a855f7"/>
+  <line class="synapse" x1="100" y1="300" x2="250" y2="80" stroke="#a855f7"/>
+  <line class="signal" x1="100" y1="300" x2="250" y2="80" stroke="#a855f7"/>
+  <line class="synapse" x1="100" y1="300" x2="250" y2="160" stroke="#a855f7"/>
+  <line class="signal signal-fast" x1="100" y1="300" x2="250" y2="160" stroke="#a855f7"/>
+  <line class="synapse" x1="100" y1="300" x2="250" y2="240" stroke="#a855f7"/>
+  <line class="signal signal-slow" x1="100" y1="300" x2="250" y2="240" stroke="#a855f7"/>
+  <line class="synapse" x1="100" y1="300" x2="250" y2="320" stroke="#a855f7"/>
+  <line class="signal" x1="100" y1="300" x2="250" y2="320" stroke="#a855f7"/>
+  <line class="synapse" x1="100" y1="400" x2="250" y2="80" stroke="#a855f7"/>
+  <line class="signal signal-slow" x1="100" y1="400" x2="250" y2="80" stroke="#a855f7"/>
+  <line class="synapse" x1="100" y1="400" x2="250" y2="160" stroke="#a855f7"/>
+  <line class="signal" x1="100" y1="400" x2="250" y2="160" stroke="#a855f7"/>
+  <line class="synapse" x1="100" y1="400" x2="250" y2="240" stroke="#a855f7"/>
+  <line class="signal signal-fast" x1="100" y1="400" x2="250" y2="240" stroke="#a855f7"/>
+  <line class="synapse" x1="100" y1="400" x2="250" y2="320" stroke="#a855f7"/>
+  <line class="signal" x1="100" y1="400" x2="250" y2="320" stroke="#a855f7"/>
+
+  <!-- Synapses: H1 → H2 -->
+  <line class="synapse" x1="250" y1="80" x2="400" y2="100" stroke="#3b82f6"/>
+  <line class="signal" x1="250" y1="80" x2="400" y2="100" stroke="#3b82f6"/>
+  <line class="synapse" x1="250" y1="80" x2="400" y2="200" stroke="#3b82f6"/>
+  <line class="signal signal-slow" x1="250" y1="80" x2="400" y2="200" stroke="#3b82f6"/>
+  <line class="synapse" x1="250" y1="80" x2="400" y2="300" stroke="#3b82f6"/>
+  <line class="signal signal-fast" x1="250" y1="80" x2="400" y2="300" stroke="#3b82f6"/>
+  <line class="synapse" x1="250" y1="160" x2="400" y2="100" stroke="#3b82f6"/>
+  <line class="signal signal-fast" x1="250" y1="160" x2="400" y2="100" stroke="#3b82f6"/>
+  <line class="synapse" x1="250" y1="160" x2="400" y2="200" stroke="#3b82f6"/>
+  <line class="signal" x1="250" y1="160" x2="400" y2="200" stroke="#3b82f6"/>
+  <line class="synapse" x1="250" y1="160" x2="400" y2="300" stroke="#3b82f6"/>
+  <line class="signal signal-slow" x1="250" y1="160" x2="400" y2="300" stroke="#3b82f6"/>
+  <line class="synapse" x1="250" y1="240" x2="400" y2="100" stroke="#3b82f6"/>
+  <line class="signal" x1="250" y1="240" x2="400" y2="100" stroke="#3b82f6"/>
+  <line class="synapse" x1="250" y1="240" x2="400" y2="200" stroke="#3b82f6"/>
+  <line class="signal signal-fast" x1="250" y1="240" x2="400" y2="200" stroke="#3b82f6"/>
+  <line class="synapse" x1="250" y1="240" x2="400" y2="300" stroke="#3b82f6"/>
+  <line class="signal" x1="250" y1="240" x2="400" y2="300" stroke="#3b82f6"/>
+  <line class="synapse" x1="250" y1="320" x2="400" y2="100" stroke="#3b82f6"/>
+  <line class="signal signal-slow" x1="250" y1="320" x2="400" y2="100" stroke="#3b82f6"/>
+  <line class="synapse" x1="250" y1="320" x2="400" y2="200" stroke="#3b82f6"/>
+  <line class="signal" x1="250" y1="320" x2="400" y2="200" stroke="#3b82f6"/>
+  <line class="synapse" x1="250" y1="320" x2="400" y2="300" stroke="#3b82f6"/>
+  <line class="signal signal-fast" x1="250" y1="320" x2="400" y2="300" stroke="#3b82f6"/>
+
+  <!-- Synapses: H2 → H3 -->
+  <line class="synapse" x1="400" y1="100" x2="550" y2="120" stroke="#06b6d4"/>
+  <line class="signal" x1="400" y1="100" x2="550" y2="120" stroke="#06b6d4"/>
+  <line class="synapse" x1="400" y1="100" x2="550" y2="250" stroke="#06b6d4"/>
+  <line class="signal signal-slow" x1="400" y1="100" x2="550" y2="250" stroke="#06b6d4"/>
+  <line class="synapse" x1="400" y1="100" x2="550" y2="380" stroke="#06b6d4"/>
+  <line class="signal signal-fast" x1="400" y1="100" x2="550" y2="380" stroke="#06b6d4"/>
+  <line class="synapse" x1="400" y1="200" x2="550" y2="120" stroke="#06b6d4"/>
+  <line class="signal signal-fast" x1="400" y1="200" x2="550" y2="120" stroke="#06b6d4"/>
+  <line class="synapse" x1="400" y1="200" x2="550" y2="250" stroke="#06b6d4"/>
+  <line class="signal" x1="400" y1="200" x2="550" y2="250" stroke="#06b6d4"/>
+  <line class="synapse" x1="400" y1="200" x2="550" y2="380" stroke="#06b6d4"/>
+  <line class="signal signal-slow" x1="400" y1="200" x2="550" y2="380" stroke="#06b6d4"/>
+  <line class="synapse" x1="400" y1="300" x2="550" y2="120" stroke="#06b6d4"/>
+  <line class="signal signal-slow" x1="400" y1="300" x2="550" y2="120" stroke="#06b6d4"/>
+  <line class="synapse" x1="400" y1="300" x2="550" y2="250" stroke="#06b6d4"/>
+  <line class="signal signal-fast" x1="400" y1="300" x2="550" y2="250" stroke="#06b6d4"/>
+  <line class="synapse" x1="400" y1="300" x2="550" y2="380" stroke="#06b6d4"/>
+  <line class="signal" x1="400" y1="300" x2="550" y2="380" stroke="#06b6d4"/>
+
+  <!-- Synapses: H3 → Output -->
+  <line class="synapse" x1="550" y1="120" x2="700" y2="200" stroke="#10b981"/>
+  <line class="signal" x1="550" y1="120" x2="700" y2="200" stroke="#10b981"/>
+  <line class="synapse" x1="550" y1="120" x2="700" y2="300" stroke="#10b981"/>
+  <line class="signal signal-slow" x1="550" y1="120" x2="700" y2="300" stroke="#10b981"/>
+  <line class="synapse" x1="550" y1="250" x2="700" y2="200" stroke="#10b981"/>
+  <line class="signal signal-fast" x1="550" y1="250" x2="700" y2="200" stroke="#10b981"/>
+  <line class="synapse" x1="550" y1="250" x2="700" y2="300" stroke="#10b981"/>
+  <line class="signal" x1="550" y1="250" x2="700" y2="300" stroke="#10b981"/>
+  <line class="synapse" x1="550" y1="380" x2="700" y2="200" stroke="#10b981"/>
+  <line class="signal signal-slow" x1="550" y1="380" x2="700" y2="200" stroke="#10b981"/>
+  <line class="synapse" x1="550" y1="380" x2="700" y2="300" stroke="#10b981"/>
+  <line class="signal signal-fast" x1="550" y1="380" x2="700" y2="300" stroke="#10b981"/>
+
+  <!-- Neuron Glows -->
+  <circle class="neuron-glow" cx="100" cy="100" r="25" fill="url(#rP)"/>
+  <circle class="neuron-glow" cx="100" cy="200" r="25" fill="url(#rP)"/>
+  <circle class="neuron-glow" cx="100" cy="300" r="25" fill="url(#rP)"/>
+  <circle class="neuron-glow" cx="100" cy="400" r="25" fill="url(#rP)"/>
+  <circle class="neuron-glow" cx="250" cy="80" r="25" fill="url(#rB)"/>
+  <circle class="neuron-glow" cx="250" cy="160" r="25" fill="url(#rB)"/>
+  <circle class="neuron-glow" cx="250" cy="240" r="25" fill="url(#rB)"/>
+  <circle class="neuron-glow" cx="250" cy="320" r="25" fill="url(#rB)"/>
+  <circle class="neuron-glow" cx="400" cy="100" r="25" fill="url(#rT)"/>
+  <circle class="neuron-glow" cx="400" cy="200" r="25" fill="url(#rT)"/>
+  <circle class="neuron-glow" cx="400" cy="300" r="25" fill="url(#rT)"/>
+  <circle class="neuron-glow" cx="550" cy="120" r="25" fill="url(#rG)"/>
+  <circle class="neuron-glow" cx="550" cy="250" r="25" fill="url(#rG)"/>
+  <circle class="neuron-glow" cx="550" cy="380" r="25" fill="url(#rG)"/>
+  <circle class="neuron-glow" cx="700" cy="200" r="25" fill="url(#rO)"/>
+  <circle class="neuron-glow" cx="700" cy="300" r="25" fill="url(#rO)"/>
+
+  <!-- Neurons -->
+  <circle class="neuron" cx="100" cy="100" r="12" fill="url(#gP)"/>
+  <circle class="neuron" cx="100" cy="200" r="12" fill="url(#gP)"/>
+  <circle class="neuron" cx="100" cy="300" r="12" fill="url(#gP)"/>
+  <circle class="neuron" cx="100" cy="400" r="12" fill="url(#gP)"/>
+  <circle class="neuron" cx="250" cy="80" r="12" fill="url(#gB)"/>
+  <circle class="neuron" cx="250" cy="160" r="12" fill="url(#gB)"/>
+  <circle class="neuron" cx="250" cy="240" r="12" fill="url(#gB)"/>
+  <circle class="neuron" cx="250" cy="320" r="12" fill="url(#gB)"/>
+  <circle class="neuron" cx="400" cy="100" r="12" fill="url(#gT)"/>
+  <circle class="neuron" cx="400" cy="200" r="12" fill="url(#gT)"/>
+  <circle class="neuron" cx="400" cy="300" r="12" fill="url(#gT)"/>
+  <circle class="neuron" cx="550" cy="120" r="12" fill="url(#gG)"/>
+  <circle class="neuron" cx="550" cy="250" r="12" fill="url(#gG)"/>
+  <circle class="neuron" cx="550" cy="380" r="12" fill="url(#gG)"/>
+  <circle class="neuron" cx="700" cy="200" r="12" fill="url(#gO)"/>
+  <circle class="neuron" cx="700" cy="300" r="12" fill="url(#gO)"/>
+</svg>
+
+<div class="info-panel">
+  <div class="info-card"><div class="val">4</div><div class="lbl">Input Neurons</div></div>
+  <div class="info-card"><div class="val">4-3-3</div><div class="lbl">Hidden Layers</div></div>
+  <div class="info-card"><div class="val">2</div><div class="lbl">Output Neurons</div></div>
+  <div class="info-card"><div class="val">ReLU</div><div class="lbl">Activation</div></div>
+</div>
+
+<div class="prompt-box">
+  <h3>Prompt to Generate This Visual</h3>
+  <code>Create an animated neural network SVG visualization with:
+- 5 layers: Input(4), Hidden1(4), Hidden2(3), Hidden3(3), Output(2)
+- Draw all synaptic connections between adjacent layers
+- Animate signals flowing along connections using stroke-dasharray with 3 speed variations
+- Each layer has a distinct gradient color (purple, blue, teal, green, orange)
+- Add radial gradient glow behind each neuron with pulsing animation
+- Neurons expand slightly on hover
+- Layer labels at top
+- Dark background, SVG viewBox for responsive scaling
+- Below SVG: info cards showing network architecture specs</code>
+</div>
+</body>
+</html>

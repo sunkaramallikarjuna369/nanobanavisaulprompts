@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI Systems Roadmap - Animated Flowing Lines</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: #0a0a1a;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    padding: 40px 20px;
+  }
+  .container {
+    max-width: 1000px;
+    width: 100%;
+  }
+  h1 {
+    text-align: center;
+    font-size: 2.5em;
+    background: linear-gradient(135deg, #a855f7, #06b6d4);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 10px;
+    font-weight: 800;
+  }
+  h2 {
+    text-align: center;
+    color: #e2e8f0;
+    font-size: 1.8em;
+    margin-bottom: 40px;
+    font-weight: 700;
+  }
+  svg {
+    width: 100%;
+    height: auto;
+    overflow: visible;
+  }
+
+  .flow-line {
+    fill: none;
+    stroke-width: 2.5;
+    stroke-linecap: round;
+  }
+  .flow-line-bg {
+    fill: none;
+    stroke-width: 3;
+    stroke-linecap: round;
+    opacity: 0.15;
+  }
+
+  .flow-purple {
+    stroke: url(#gradPurple);
+    stroke-dasharray: 8, 4;
+    animation: flowForward 1.5s linear infinite;
+  }
+  .flow-teal {
+    stroke: url(#gradTeal);
+    stroke-dasharray: 8, 4;
+    animation: flowForward 2s linear infinite;
+  }
+  .flow-pink {
+    stroke: url(#gradPink);
+    stroke-dasharray: 8, 4;
+    animation: flowForward 1.8s linear infinite;
+  }
+
+  .flow-purple-bg { stroke: #a855f7; }
+  .flow-teal-bg { stroke: #06b6d4; }
+  .flow-pink-bg { stroke: #ec4899; }
+
+  @keyframes flowForward {
+    from { stroke-dashoffset: 0; }
+    to { stroke-dashoffset: -24; }
+  }
+
+  .node-main {
+    cursor: pointer;
+    transition: transform 0.3s;
+  }
+  .node-main:hover {
+    transform: scale(1.05);
+  }
+  .node-rect {
+    rx: 12;
+    ry: 12;
+    filter: url(#glow);
+  }
+  .node-text {
+    fill: white;
+    font-size: 13px;
+    font-weight: 600;
+    text-anchor: middle;
+    dominant-baseline: central;
+  }
+  .node-subtext {
+    fill: rgba(255,255,255,0.7);
+    font-size: 10px;
+    text-anchor: middle;
+    dominant-baseline: central;
+  }
+  .leaf-text {
+    fill: #e2e8f0;
+    font-size: 11px;
+    dominant-baseline: central;
+  }
+  .leaf-dot {
+    filter: url(#dotGlow);
+    animation: pulse 2s ease-in-out infinite;
+  }
+  .leaf-dot:nth-child(odd) { animation-delay: 0.5s; }
+  .leaf-dot:nth-child(3n) { animation-delay: 1s; }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 0.7; r: 4; }
+    50% { opacity: 1; r: 5.5; }
+  }
+
+  .vertical-bar {
+    animation: barGlow 3s ease-in-out infinite;
+  }
+  @keyframes barGlow {
+    0%, 100% { opacity: 0.6; }
+    50% { opacity: 1; }
+  }
+
+  .prompt-box {
+    background: linear-gradient(135deg, rgba(168,85,247,0.1), rgba(6,182,212,0.1));
+    border: 1px solid rgba(168,85,247,0.3);
+    border-radius: 12px;
+    padding: 24px;
+    margin-top: 40px;
+    color: #e2e8f0;
+  }
+  .prompt-box h3 {
+    color: #a855f7;
+    margin-bottom: 12px;
+    font-size: 1.2em;
+  }
+  .prompt-box code {
+    display: block;
+    background: rgba(0,0,0,0.4);
+    padding: 16px;
+    border-radius: 8px;
+    font-size: 0.9em;
+    line-height: 1.6;
+    color: #06b6d4;
+    white-space: pre-wrap;
+    margin-top: 8px;
+  }
+</style>
+</head>
+<body>
+<div class="container">
+  <h1>PRODUCTION-GRADE AI SYSTEMS</h1>
+  <h2>ROADMAP</h2>
+
+  <svg viewBox="0 0 900 1100" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <linearGradient id="gradPurple" x1="0%" y1="0%" x2="100%" y2="0%">
+        <stop offset="0%" style="stop-color:#7c3aed" />
+        <stop offset="100%" style="stop-color:#a855f7" />
+      </linearGradient>
+      <linearGradient id="gradTeal" x1="0%" y1="0%" x2="100%" y2="0%">
+        <stop offset="0%" style="stop-color:#0891b2" />
+        <stop offset="100%" style="stop-color:#06b6d4" />
+      </linearGradient>
+      <linearGradient id="gradPink" x1="0%" y1="0%" x2="100%" y2="0%">
+        <stop offset="0%" style="stop-color:#db2777" />
+        <stop offset="100%" style="stop-color:#ec4899" />
+      </linearGradient>
+      <linearGradient id="gradNode1" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" style="stop-color:#7c3aed" />
+        <stop offset="100%" style="stop-color:#a855f7" />
+      </linearGradient>
+      <linearGradient id="gradNode2" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" style="stop-color:#6d28d9" />
+        <stop offset="100%" style="stop-color:#8b5cf6" />
+      </linearGradient>
+      <linearGradient id="gradNode3" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" style="stop-color:#5b21b6" />
+        <stop offset="100%" style="stop-color:#7c3aed" />
+      </linearGradient>
+      <linearGradient id="gradNode4" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" style="stop-color:#0e7490" />
+        <stop offset="100%" style="stop-color:#06b6d4" />
+      </linearGradient>
+      <linearGradient id="gradNode5" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" style="stop-color:#0891b2" />
+        <stop offset="100%" style="stop-color:#22d3ee" />
+      </linearGradient>
+      <linearGradient id="barGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+        <stop offset="0%" style="stop-color:#7c3aed" />
+        <stop offset="50%" style="stop-color:#a855f7" />
+        <stop offset="100%" style="stop-color:#06b6d4" />
+      </linearGradient>
+      <filter id="glow">
+        <feGaussianBlur stdDeviation="3" result="glow"/>
+        <feMerge><feMergeNode in="glow"/><feMergeNode in="SourceGraphic"/></feMerge>
+      </filter>
+      <filter id="dotGlow">
+        <feGaussianBlur stdDeviation="2" result="glow"/>
+        <feMerge><feMergeNode in="glow"/><feMergeNode in="SourceGraphic"/></feMerge>
+      </filter>
+    </defs>
+
+    <!-- Vertical bar -->
+    <rect class="vertical-bar" x="28" y="20" width="8" height="1060" rx="4" fill="url(#barGrad)" opacity="0.7"/>
+
+    <!-- NODE 1: Model Layer -->
+    <g class="node-main">
+      <rect class="node-rect" x="80" y="30" width="180" height="70" fill="url(#gradNode1)"/>
+      <text class="node-text" x="170" y="55">Model Layer</text>
+      <text class="node-subtext" x="170" y="75">(~25-30%)</text>
+    </g>
+    <!-- Flowing lines from Node 1 -->
+    <path class="flow-line-bg flow-purple-bg" d="M 260,50 C 380,50 400,30 520,30"/>
+    <path class="flow-line flow-purple" d="M 260,50 C 380,50 400,30 520,30"/>
+    <circle class="leaf-dot" cx="525" cy="30" r="4" fill="#a855f7"/>
+    <text class="leaf-text" x="535" y="30">Model selection (cost vs latency)</text>
+
+    <path class="flow-line-bg flow-purple-bg" d="M 260,55 C 380,55 400,55 520,55"/>
+    <path class="flow-line flow-purple" d="M 260,55 C 380,55 400,55 520,55"/>
+    <circle class="leaf-dot" cx="525" cy="55" r="4" fill="#a855f7"/>
+    <text class="leaf-text" x="535" y="55">Fine-tuning vs prompting</text>
+
+    <path class="flow-line-bg flow-purple-bg" d="M 260,65 C 380,65 400,80 520,80"/>
+    <path class="flow-line flow-purple" d="M 260,65 C 380,65 400,80 520,80"/>
+    <circle class="leaf-dot" cx="525" cy="80" r="4" fill="#a855f7"/>
+    <text class="leaf-text" x="535" y="80">Open vs closed models</text>
+
+    <path class="flow-line-bg flow-purple-bg" d="M 260,75 C 380,75 400,105 520,105"/>
+    <path class="flow-line flow-purple" d="M 260,75 C 380,75 400,105 520,105"/>
+    <circle class="leaf-dot" cx="525" cy="105" r="4" fill="#a855f7"/>
+    <text class="leaf-text" x="535" y="105">Multimodal models</text>
+
+    <path class="flow-line-bg flow-teal-bg" d="M 260,85 C 380,85 400,130 520,130"/>
+    <path class="flow-line flow-teal" d="M 260,85 C 380,85 400,130 520,130"/>
+    <circle class="leaf-dot" cx="525" cy="130" r="4" fill="#06b6d4"/>
+    <text class="leaf-text" x="535" y="130">Benchmarking & comparisons</text>
+
+    <!-- NODE 2: Context & Retrieval -->
+    <g class="node-main">
+      <rect class="node-rect" x="80" y="180" width="180" height="70" fill="url(#gradNode2)"/>
+      <text class="node-text" x="170" y="205">Context & Retrieval</text>
+      <text class="node-subtext" x="170" y="225">(~20-25%)</text>
+    </g>
+    <path class="flow-line-bg flow-purple-bg" d="M 260,195 C 380,195 400,185 520,185"/>
+    <path class="flow-line flow-purple" d="M 260,195 C 380,195 400,185 520,185"/>
+    <circle class="leaf-dot" cx="525" cy="185" r="4" fill="#a855f7"/>
+    <text class="leaf-text" x="535" y="185">RAG pipelines</text>
+
+    <path class="flow-line-bg flow-teal-bg" d="M 260,205 C 380,205 400,210 520,210"/>
+    <path class="flow-line flow-teal" d="M 260,205 C 380,205 400,210 520,210"/>
+    <circle class="leaf-dot" cx="525" cy="210" r="4" fill="#06b6d4"/>
+    <text class="leaf-text" x="535" y="210">Chunking strategies</text>
+
+    <path class="flow-line-bg flow-purple-bg" d="M 260,215 C 380,215 400,235 520,235"/>
+    <path class="flow-line flow-purple" d="M 260,215 C 380,215 400,235 520,235"/>
+    <circle class="leaf-dot" cx="525" cy="235" r="4" fill="#a855f7"/>
+    <text class="leaf-text" x="535" y="235">Embeddings design</text>
+
+    <path class="flow-line-bg flow-teal-bg" d="M 260,225 C 380,225 400,260 520,260"/>
+    <path class="flow-line flow-teal" d="M 260,225 C 380,225 400,260 520,260"/>
+    <circle class="leaf-dot" cx="525" cy="260" r="4" fill="#06b6d4"/>
+    <text class="leaf-text" x="535" y="260">Hybrid search</text>
+
+    <path class="flow-line-bg flow-pink-bg" d="M 260,235 C 380,235 400,285 520,285"/>
+    <path class="flow-line flow-pink" d="M 260,235 C 380,235 400,285 520,285"/>
+    <circle class="leaf-dot" cx="525" cy="285" r="4" fill="#ec4899"/>
+    <text class="leaf-text" x="535" y="285">Memory systems</text>
+
+    <!-- NODE 3: Agent Architecture -->
+    <g class="node-main">
+      <rect class="node-rect" x="80" y="330" width="180" height="70" fill="url(#gradNode3)"/>
+      <text class="node-text" x="170" y="355">Agent Architecture</text>
+      <text class="node-subtext" x="170" y="375">(~15-20%)</text>
+    </g>
+    <path class="flow-line-bg flow-purple-bg" d="M 260,345 C 380,345 400,335 520,335"/>
+    <path class="flow-line flow-purple" d="M 260,345 C 380,345 400,335 520,335"/>
+    <circle class="leaf-dot" cx="525" cy="335" r="4" fill="#a855f7"/>
+    <text class="leaf-text" x="535" y="335">Agent patterns</text>
+
+    <path class="flow-line-bg flow-teal-bg" d="M 260,355 C 380,355 400,360 520,360"/>
+    <path class="flow-line flow-teal" d="M 260,355 C 380,355 400,360 520,360"/>
+    <circle class="leaf-dot" cx="525" cy="360" r="4" fill="#06b6d4"/>
+    <text class="leaf-text" x="535" y="360">Planning vs execution separation</text>
+
+    <path class="flow-line-bg flow-purple-bg" d="M 260,365 C 380,365 400,385 520,385"/>
+    <path class="flow-line flow-purple" d="M 260,365 C 380,365 400,385 520,385"/>
+    <circle class="leaf-dot" cx="525" cy="385" r="4" fill="#a855f7"/>
+    <text class="leaf-text" x="535" y="385">Tool calling</text>
+
+    <path class="flow-line-bg flow-pink-bg" d="M 260,375 C 380,375 400,410 520,410"/>
+    <path class="flow-line flow-pink" d="M 260,375 C 380,375 400,410 520,410"/>
+    <circle class="leaf-dot" cx="525" cy="410" r="4" fill="#ec4899"/>
+    <text class="leaf-text" x="535" y="410">Multi-agent workflows</text>
+
+    <path class="flow-line-bg flow-teal-bg" d="M 260,385 C 380,385 400,435 520,435"/>
+    <path class="flow-line flow-teal" d="M 260,385 C 380,385 400,435 520,435"/>
+    <circle class="leaf-dot" cx="525" cy="435" r="4" fill="#06b6d4"/>
+    <text class="leaf-text" x="535" y="435">Human-in-the-loop</text>
+
+    <!-- NODE 4: Infrastructure -->
+    <g class="node-main">
+      <rect class="node-rect" x="80" y="490" width="180" height="70" fill="url(#gradNode4)"/>
+      <text class="node-text" x="170" y="515">Infrastructure &</text>
+      <text class="node-subtext" x="170" y="535">Deployment (~15-20%)</text>
+    </g>
+    <path class="flow-line-bg flow-teal-bg" d="M 260,505 C 380,505 400,490 520,490"/>
+    <path class="flow-line flow-teal" d="M 260,505 C 380,505 400,490 520,490"/>
+    <circle class="leaf-dot" cx="525" cy="490" r="4" fill="#06b6d4"/>
+    <text class="leaf-text" x="535" y="490">Containers & APIs</text>
+
+    <path class="flow-line-bg flow-purple-bg" d="M 260,515 C 380,515 400,515 520,515"/>
+    <path class="flow-line flow-purple" d="M 260,515 C 380,515 400,515 520,515"/>
+    <circle class="leaf-dot" cx="525" cy="515" r="4" fill="#a855f7"/>
+    <text class="leaf-text" x="535" y="515">Serverless inference</text>
+
+    <path class="flow-line-bg flow-teal-bg" d="M 260,525 C 380,525 400,540 520,540"/>
+    <path class="flow-line flow-teal" d="M 260,525 C 380,525 400,540 520,540"/>
+    <circle class="leaf-dot" cx="525" cy="540" r="4" fill="#06b6d4"/>
+    <text class="leaf-text" x="535" y="540">CI/CD for AI</text>
+
+    <path class="flow-line-bg flow-pink-bg" d="M 260,540 C 380,540 400,565 520,565"/>
+    <path class="flow-line flow-pink" d="M 260,540 C 380,540 400,565 520,565"/>
+    <circle class="leaf-dot" cx="525" cy="565" r="4" fill="#ec4899"/>
+    <text class="leaf-text" x="535" y="565">Model gateways</text>
+
+    <path class="flow-line-bg flow-teal-bg" d="M 260,550 C 380,550 400,590 520,590"/>
+    <path class="flow-line flow-teal" d="M 260,550 C 380,550 400,590 520,590"/>
+    <circle class="leaf-dot" cx="525" cy="590" r="4" fill="#06b6d4"/>
+    <text class="leaf-text" x="535" y="590">Scaling strategies</text>
+
+    <!-- NODE 5: Reliability -->
+    <g class="node-main">
+      <rect class="node-rect" x="80" y="640" width="180" height="70" fill="url(#gradNode5)"/>
+      <text class="node-text" x="170" y="665">Reliability &</text>
+      <text class="node-subtext" x="170" y="685">Quality (~10-15%)</text>
+    </g>
+    <path class="flow-line-bg flow-teal-bg" d="M 260,655 C 380,655 400,645 520,645"/>
+    <path class="flow-line flow-teal" d="M 260,655 C 380,655 400,645 520,645"/>
+    <circle class="leaf-dot" cx="525" cy="645" r="4" fill="#06b6d4"/>
+    <text class="leaf-text" x="535" y="645">Evaluation pipelines</text>
+
+    <path class="flow-line-bg flow-purple-bg" d="M 260,665 C 380,665 400,670 520,670"/>
+    <path class="flow-line flow-purple" d="M 260,665 C 380,665 400,670 520,670"/>
+    <circle class="leaf-dot" cx="525" cy="670" r="4" fill="#a855f7"/>
+    <text class="leaf-text" x="535" y="670">Drift detection</text>
+
+    <path class="flow-line-bg flow-teal-bg" d="M 260,680 C 380,680 400,695 520,695"/>
+    <path class="flow-line flow-teal" d="M 260,680 C 380,680 400,695 520,695"/>
+    <circle class="leaf-dot" cx="525" cy="695" r="4" fill="#06b6d4"/>
+    <text class="leaf-text" x="535" y="695">Hallucination monitoring</text>
+
+    <path class="flow-line-bg flow-pink-bg" d="M 260,690 C 380,690 400,720 520,720"/>
+    <path class="flow-line flow-pink" d="M 260,690 C 380,690 400,720 520,720"/>
+    <circle class="leaf-dot" cx="525" cy="720" r="4" fill="#ec4899"/>
+    <text class="leaf-text" x="535" y="720">Error handling & fallbacks</text>
+
+    <!-- NODE 6: Security -->
+    <g class="node-main">
+      <rect class="node-rect" x="80" y="780" width="180" height="70" fill="url(#gradNode3)"/>
+      <text class="node-text" x="170" y="805">Security &</text>
+      <text class="node-subtext" x="170" y="825">Governance (~10-15%)</text>
+    </g>
+    <path class="flow-line-bg flow-purple-bg" d="M 260,795 C 380,795 400,775 520,775"/>
+    <path class="flow-line flow-purple" d="M 260,795 C 380,795 400,775 520,775"/>
+    <circle class="leaf-dot" cx="525" cy="775" r="4" fill="#a855f7"/>
+    <text class="leaf-text" x="535" y="775">Prompt injection defense</text>
+
+    <path class="flow-line-bg flow-teal-bg" d="M 260,805 C 380,805 400,800 520,800"/>
+    <path class="flow-line flow-teal" d="M 260,805 C 380,805 400,800 520,800"/>
+    <circle class="leaf-dot" cx="525" cy="800" r="4" fill="#06b6d4"/>
+    <text class="leaf-text" x="535" y="800">RBAC & secrets management</text>
+
+    <path class="flow-line-bg flow-purple-bg" d="M 260,815 C 380,815 400,825 520,825"/>
+    <path class="flow-line flow-purple" d="M 260,815 C 380,815 400,825 520,825"/>
+    <circle class="leaf-dot" cx="525" cy="825" r="4" fill="#a855f7"/>
+    <text class="leaf-text" x="535" y="825">Audit trails & observability</text>
+
+    <path class="flow-line-bg flow-pink-bg" d="M 260,830 C 380,830 400,850 520,850"/>
+    <path class="flow-line flow-pink" d="M 260,830 C 380,830 400,850 520,850"/>
+    <circle class="leaf-dot" cx="525" cy="850" r="4" fill="#ec4899"/>
+    <text class="leaf-text" x="535" y="850">Compliance (GDPR / EU AI Act)</text>
+
+    <path class="flow-line-bg flow-teal-bg" d="M 260,840 C 380,840 400,875 520,875"/>
+    <path class="flow-line flow-teal" d="M 260,840 C 380,840 400,875 520,875"/>
+    <circle class="leaf-dot" cx="525" cy="875" r="4" fill="#06b6d4"/>
+    <text class="leaf-text" x="535" y="875">Data lineage & guardrails</text>
+
+    <!-- NODE 7: Cost & Performance -->
+    <g class="node-main">
+      <rect class="node-rect" x="80" y="930" width="180" height="70" fill="url(#gradNode4)"/>
+      <text class="node-text" x="170" y="955">Cost &</text>
+      <text class="node-subtext" x="170" y="975">Performance (~10-15%)</text>
+    </g>
+    <path class="flow-line-bg flow-teal-bg" d="M 260,945 C 380,945 400,930 520,930"/>
+    <path class="flow-line flow-teal" d="M 260,945 C 380,945 400,930 520,930"/>
+    <circle class="leaf-dot" cx="525" cy="930" r="4" fill="#06b6d4"/>
+    <text class="leaf-text" x="535" y="930">Token optimization</text>
+
+    <path class="flow-line-bg flow-purple-bg" d="M 260,955 C 380,955 400,955 520,955"/>
+    <path class="flow-line flow-purple" d="M 260,955 C 380,955 400,955 520,955"/>
+    <circle class="leaf-dot" cx="525" cy="955" r="4" fill="#a855f7"/>
+    <text class="leaf-text" x="535" y="955">Caching strategies</text>
+
+    <path class="flow-line-bg flow-teal-bg" d="M 260,965 C 380,965 400,980 520,980"/>
+    <path class="flow-line flow-teal" d="M 260,965 C 380,965 400,980 520,980"/>
+    <circle class="leaf-dot" cx="525" cy="980" r="4" fill="#06b6d4"/>
+    <text class="leaf-text" x="535" y="980">Model routing</text>
+
+    <path class="flow-line-bg flow-pink-bg" d="M 260,975 C 380,975 400,1005 520,1005"/>
+    <path class="flow-line flow-pink" d="M 260,975 C 380,975 400,1005 520,1005"/>
+    <circle class="leaf-dot" cx="525" cy="1005" r="4" fill="#ec4899"/>
+    <text class="leaf-text" x="535" y="1005">Latency budgets</text>
+
+    <path class="flow-line-bg flow-teal-bg" d="M 260,985 C 380,985 400,1030 520,1030"/>
+    <path class="flow-line flow-teal" d="M 260,985 C 380,985 400,1030 520,1030"/>
+    <circle class="leaf-dot" cx="525" cy="1030" r="4" fill="#06b6d4"/>
+    <text class="leaf-text" x="535" y="1030">Throughput tuning</text>
+  </svg>
+
+  <div class="prompt-box">
+    <h3>Prompt Used to Generate This Visual</h3>
+    <code>Generate an animated SVG roadmap for "Production-Grade AI Systems" with:
+- 7 main category nodes on the left (Model Layer, Context & Retrieval, Agent Architecture, Infrastructure, Reliability, Security, Cost)
+- Each node has 4-5 sub-topics branching to the right with curved flowing lines
+- Use purple-to-teal gradient color scheme
+- Animate the lines with CSS stroke-dasharray flowing effect
+- Add pulsing dot indicators at each leaf node
+- Include a vertical progress bar on the far left
+- Dark background (#0a0a1a) with glowing effects
+- Make it responsive and interactive (hover effects on nodes)</code>
+  </div>
+</div>
+</body>
+</html>
